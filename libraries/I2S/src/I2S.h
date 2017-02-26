@@ -48,6 +48,8 @@ public:
     int begin(int mode, long sampleRate, int bitsPerSample, bool masterClock = false);
     // the SCK and FS pins are inputs, other side controls sample rate
     int begin(int mode, int bitsPerSample);
+    int samplerate(uint32_t sampleRate);   //added by N Waterton 24th feb 2017
+    int samplerate();   //added by N Waterton 24th feb 2017
     void end();
 
     // from Stream
@@ -75,6 +77,7 @@ private:
     struct _stm32l4_sai_t *_sai;
     uint8_t _state;
     uint8_t _width;
+    uint32_t _samplerate;   //added by N Waterton 24th feb 2017
     volatile uint8_t _xf_active;
     volatile uint8_t _xf_pending;
     volatile uint32_t _xf_offset;

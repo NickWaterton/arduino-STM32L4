@@ -84,6 +84,7 @@ int I2SClass::begin(int mode, long sampleRate, int bitsPerSample, bool masterClo
     case 11025:
     case 22050:
     case 44100:
+    _samplerate = sampleRate;
 	break;
     default:
 	return 0;
@@ -147,6 +148,64 @@ int I2SClass::begin(int mode, int bitsPerSample)
     _state = I2S_STATE_READY;
 
     return 1;
+}
+
+
+int I2SClass::samplerate(uint32_t sampleRate)  //set samplerate (added by N Waterton 24th Feb 2017)
+{
+    SAI_Block_TypeDef *SAIx = _sai->SAIx;
+    uint32_t sai_cr1, sai_frcr, sai_slotr, saiclk;
+    
+    if (sampleRate == 0) {  //disable sai clock
+        stm32l4_system_saiclk_configure(SYSTEM_SAICLK_NONE);
+        _samplerate = 0;
+        return _samplerate;
+    }
+    
+    sai_cr1 = SAIx->CR1 & ~(15 << SAI_xCR1_MCKDIV_Pos); //copy existing CR1 reister with master clock divider set to 0000
+   
+#if defined(STM32L432xx) || defined(STM32L433xx)
+	switch (sampleRate) {
+	case 8000:  saiclk = SYSTEM_SAICLK_8192000;  sai_cr1 |= (2 << SAI_xCR1_MCKDIV_Pos); break;
+	case 16000: saiclk = SYSTEM_SAICLK_8192000;  sai_cr1 |= (1 << SAI_xCR1_MCKDIV_Pos); break;
+	case 32000: saiclk = SYSTEM_SAICLK_8192000;  sai_cr1 |= (0 << SAI_xCR1_MCKDIV_Pos); break;
+	case 12000: saiclk = SYSTEM_SAICLK_24576000; sai_cr1 |= (4 << SAI_xCR1_MCKDIV_Pos); break;
+	case 24000: saiclk = SYSTEM_SAICLK_24576000; sai_cr1 |= (2 << SAI_xCR1_MCKDIV_Pos); break;
+	case 48000: saiclk = SYSTEM_SAICLK_24576000; sai_cr1 |= (1 << SAI_xCR1_MCKDIV_Pos); break;
+	case 96000: saiclk = SYSTEM_SAICLK_24576000; sai_cr1 |= (0 << SAI_xCR1_MCKDIV_Pos); break;
+	case 11025: saiclk = SYSTEM_SAICLK_11289600; sai_cr1 |= (2 << SAI_xCR1_MCKDIV_Pos); break;
+	case 22050: saiclk = SYSTEM_SAICLK_11289600; sai_cr1 |= (1 << SAI_xCR1_MCKDIV_Pos); break;
+	case 44100: saiclk = SYSTEM_SAICLK_11289600; sai_cr1 |= (0 << SAI_xCR1_MCKDIV_Pos); break;
+	default:
+	    return -1;
+	}
+#else /* defined(STM32L432xx) || defined(STM32L433xx) */
+	switch (sampleRate) {
+	case 8000:  saiclk = SYSTEM_SAICLK_49152000; sai_cr1 |= (12 << SAI_xCR1_MCKDIV_Pos); break;
+	case 16000: saiclk = SYSTEM_SAICLK_49152000; sai_cr1 |= (6 << SAI_xCR1_MCKDIV_Pos);  break;
+	case 32000: saiclk = SYSTEM_SAICLK_49152000; sai_cr1 |= (3 << SAI_xCR1_MCKDIV_Pos);  break;
+	case 12000: saiclk = SYSTEM_SAICLK_49152000; sai_cr1 |= (8 << SAI_xCR1_MCKDIV_Pos);  break;
+	case 24000: saiclk = SYSTEM_SAICLK_49152000; sai_cr1 |= (4 << SAI_xCR1_MCKDIV_Pos);  break;
+	case 48000: saiclk = SYSTEM_SAICLK_49152000; sai_cr1 |= (2 << SAI_xCR1_MCKDIV_Pos);  break;
+	case 96000: saiclk = SYSTEM_SAICLK_49152000; sai_cr1 |= (1 << SAI_xCR1_MCKDIV_Pos);  break;
+	case 11025: saiclk = SYSTEM_SAICLK_11289600; sai_cr1 |= (2 << SAI_xCR1_MCKDIV_Pos);  break;
+	case 22050: saiclk = SYSTEM_SAICLK_11289600; sai_cr1 |= (1 << SAI_xCR1_MCKDIV_Pos);  break;
+	case 44100: saiclk = SYSTEM_SAICLK_11289600; sai_cr1 |= (0 << SAI_xCR1_MCKDIV_Pos);  break;
+	default:
+	    return -1;
+	}
+#endif /* defined(STM32L432xx) || defined(STM32L433xx) */
+
+    SAIx->CR1 = sai_cr1;    //write new clock settings to CR1 register
+
+    stm32l4_system_saiclk_configure(saiclk);    //configure clock
+    _samplerate = sampleRate;
+    return _samplerate;
+}
+
+int I2SClass::samplerate()   //added by N Waterton 24th feb 2017
+{
+    return _samplerate;
 }
 
 void I2SClass::end()
