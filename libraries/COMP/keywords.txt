@@ -1,0 +1,55 @@
+#######################################
+# Syntax Coloring Map COMP
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+COMPClass	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init               KEYWORD2
+    
+polarity           KEYWORD2
+enable             KEYWORD2
+disable            KEYWORD2
+read               KEYWORD2
+enabled            KEYWORD2
+lock               KEYWORD2
+blanking           KEYWORD2
+power_mode         KEYWORD2
+hysteresis_mode    KEYWORD2
+winmode            KEYWORD2
+enable_event       KEYWORD2
+disable_event      KEYWORD2
+event_enabled      KEYWORD2
+enable_interrupt   KEYWORD2
+disable_interrupt  KEYWORD2
+interrupt_enabled  KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+HIGH_MODE			LITERAL1
+MED_MODE	        LITERAL1
+LOW_MODE		    LITERAL1
+NONE_MODE           LITERAL1
+
+COMP_VINTREF		LITERAL1
+COMP_VINTREF_3_4	LITERAL1
+COMP_VINTREF_1_2	LITERAL1
+COMP_VINTREF_1_4	LITERAL1
+COMP_DAC1			LITERAL1
+COMP_DAC2			LITERAL1
+
+COMP_TIMER_NONE		LITERAL1
+COMP_TIMER_1		LITERAL1
+COMP_TIMER_2		LITERAL1
+COMP_TIMER_3		LITERAL1
+COMP_TIMER_8		LITERAL1
+COMP_TIMER_15		LITERAL1
