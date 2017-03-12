@@ -51,45 +51,20 @@
 #define _COMP_H_INCLUDED
 
 #include <Arduino.h>
-#include "stm32l4_wiring_private.h"
+#include "stm32l4_comp.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef enum {
-    HIGH_MODE,
-    MED_MODE,
-    LOW_MODE,
-    NONE_MODE
-} comp_mode_t;
-
-typedef enum {
-    COMP_VINTREF = -6,
-    COMP_VINTREF_3_4,
-    COMP_VINTREF_1_2,
-    COMP_VINTREF_1_4,
-    COMP_DAC1,
-    COMP_DAC2,
-} comp_neginput_t;
-
-typedef enum {
-    COMP_TIMER_NONE,
-    COMP_TIMER_1,
-    COMP_TIMER_2,
-    COMP_TIMER_3,
-    COMP_TIMER_8,
-    COMP_TIMER_15,
-} comp_blanking_t;
-
-typedef void (*voidFuncPtr)(void);
-
 class COMPClass
 {
 public:
-    COMPClass(COMP_TypeDef *comp, int posinpin = GPIO_PIN_NONE, int neginput = GPIO_PIN_NONE, bool invert = false, bool events = false, bool interrupt = false);
+    COMPClass(COMP_TypeDef *comp_reg, int posinpin = GPIO_PIN_NONE, int neginput = GPIO_PIN_NONE);
+    ~COMPClass();
 
-    bool init(int posinpin, int neginput, bool invert = false, bool events = false, bool interrupt = false);
+    bool begin(int posinpin = GPIO_PIN_NONE, int neginput = GPIO_PIN_NONE, uint32_t option = 0);
+    void end();
     
     void polarity(bool inverted);
     void enable();
@@ -110,16 +85,13 @@ public:
     bool interrupt_enabled();
     void trigger_edges(uint32_t mode = RISING);
     
-    uint8_t this_comp = 0;
-  
-private:
-    bool config_stm32l4xx_comp_pins(int posinpin, int neginput);   
-    bool _init = false;
-    COMP_TypeDef *_comp;
+    uint8_t this_comp = 0;   
     
+private:   
+    //struct stm32l4_comp_t *_comp = new stm32l4_comp_t;
+    stm32l4_comp_t comp_struct;
+    struct _stm32l4_comp_t *_comp = &comp_struct; 
 };
-
-extern void COMP_IRQHandler(void);
 
 #ifdef __cplusplus
 }

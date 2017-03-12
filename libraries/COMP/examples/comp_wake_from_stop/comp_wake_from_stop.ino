@@ -33,7 +33,7 @@
 
 #define Serial Serial1  //switch to USART1 as USB does not survive stop mode (if you want to see messages)
 
-//COMPClass Comparator(COMP2, A3, COMP_VINTREF, true, true);  //COMP2, +input A3, -input x, output inverted, events enabled, interrupts disabled
+//COMPClass Comparator(COMP2, A3, COMP_VINTREF, COMP_INVERT | COMP_EVENT_ENABLE);  //COMP2, +input A3, -input x, output inverted, events enabled, interrupts disabled
 //or
 COMPClass Comparator(COMP2);  //enter COMP1 or COMP2 depending on which you can connect pins to
 
@@ -48,7 +48,7 @@ void setup() {
   
   delay(10000); //wait to open serial monitor on USART1
   
-  if (!Comparator.init(A3, COMP_VINTREF, true, true))  //enable pin A3, VINTREF (1.2V), Inverted polarity, Events enabled (rising edge is default)
+  if (!Comparator.begin(A3, COMP_VINTREF, COMP_INVERT | COMP_EVENT_ENABLE))  //enable pin A3, VINTREF (1.2V), Inverted polarity, Events enabled (rising edge is default)
     Serial.println("COMP not enabled");
   else
     Serial.println("COMP initialised");

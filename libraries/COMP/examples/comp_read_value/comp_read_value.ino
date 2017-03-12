@@ -30,18 +30,22 @@
 #include "Arduino.h"
 #include "COMP.h"
 
-//COMPClass Comparator(COMP2, A3, COMP_VINTREF, true);  //COMP2, +input A3, -input x, output inverted 
+//#define Serial Serial1
+#define BITS32 (0x80000000U)  //1 followed by 31 0's
+#define PRREGBIN(x) Serial.print(#x" 0x"); Serial.println((x|BITS32),BIN)
+
+//COMPClass Comparator(COMP2, A3, COMP_VINTREF, COMP_INVERT);  //COMP2, +input A3, -input x, output inverted 
 //or
 COMPClass Comparator(COMP2);  //enter COMP1 or COMP2 depending on which you can connect pins to
 
 void setup() {
-  Serial.begin(15200);
+  Serial.begin(115200);
   while(!Serial) if (millis() > 30000) break; //only for native USB, not USART
 
   pinMode(PIN_LED2, OUTPUT);
   digitalWrite(PIN_LED2, HIGH); //green LED off
 
-  if (!Comparator.init(A3, COMP_VINTREF, true))  //enable pin A3, VINTREF (1.2V), Inverted polarity
+  if (!Comparator.begin(A3, COMP_VINTREF, COMP_INVERT))  //enable pin A3, VINTREF (1.2V), Inverted polarity
     Serial.println("COMP not enabled");
   else
     Serial.println("COMP initialised");
