@@ -48,9 +48,8 @@
 #define MED_HYST_MODE                   7
 #define LOW_HYST_MODE                   8
 #define NONE_HYST_MODE                  9
-#define COMP_ENABLE                     10
-#define COMP_EVENT_ENABLE               11
-#define COMP_INTERRUPT_ENABLE           12
+#define COMP_EVENT_ENABLE               10
+#define COMP_INTERRUPT_ENABLE           11
 
 #ifdef __cplusplus
  extern "C" {
@@ -77,11 +76,9 @@ typedef struct _stm32l4_comp_t {
     stm32l4_comp_pins_t          pins;
     IRQn_Type                    interrupt;
     uint8_t                      priority;
-    uint8_t                      mode;
     uint32_t                     option;
     voidFuncPtr                  callback;
     void                         *context;
-    uint32_t                     events;
 } stm32l4_comp_t;
 
 typedef struct _stm32l4_comp_driver_t {

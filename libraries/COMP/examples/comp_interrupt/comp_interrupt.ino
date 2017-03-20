@@ -69,7 +69,7 @@ void loop() {
     bool comp_value = Comparator.read();
     Serial.print(millis()/1000);Serial.print(" COMP: ");Serial.print(Comparator.this_comp);Serial.print(" ISR COUNT: ");Serial.print(count);Serial.print(" VALUE: ");Serial.println(comp_value);
     count = 0;
-    //Comparator.enable_interrupt(RISING, ISR_test); //example of how to disable and enable interrupts
+    //Comparator.enable_interrupt(RISING); //example of how to disable and enable interrupts - optionally specify ISR also
     previous_millis = millis();
   }
   

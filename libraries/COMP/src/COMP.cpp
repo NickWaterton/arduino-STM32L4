@@ -36,7 +36,7 @@
 
 stm32l4_comp_callback_t COMP_CALLBACK[2];
 
-COMPClass::COMPClass(COMP_TypeDef *comp_reg, int posinpin, int neginput) {
+COMPClass::COMPClass(COMP_TypeDef *comp_reg, int posinpin, int neginput, uint32_t mode) {
 
   int instance;
   
@@ -54,7 +54,7 @@ COMPClass::COMPClass(COMP_TypeDef *comp_reg, int posinpin, int neginput) {
   
   _comp->COMPx = comp_reg;
   
-  stm32l4_comp_create(_comp, instance, NULL, STM32L4_COMP_IRQ_PRIORITY, NULL);
+  stm32l4_comp_create(_comp, instance, NULL, STM32L4_COMP_IRQ_PRIORITY, mode);
 }
 
 COMPClass::~COMPClass() {
@@ -67,10 +67,7 @@ bool COMPClass::begin(int posinpin, int neginput, uint32_t option) {
   if (neginput != GPIO_PIN_NONE)
     _comp->pins.neginput = neginput;
 
-  //stm32l4_comp_enable(_comp, option, COMPClass::_eventCallback, (void*)this, NULL);
-  stm32l4_comp_enable(_comp, option, NULL, (void*)this, NULL);
-
-  return true;
+  return stm32l4_comp_enable(_comp, option, NULL, (void*)this, NULL);
 }
 
 void COMPClass::end() {

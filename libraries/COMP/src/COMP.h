@@ -60,7 +60,7 @@ extern "C" {
 class COMPClass
 {
 public:
-    COMPClass(COMP_TypeDef *comp_reg, int posinpin = GPIO_PIN_NONE, int neginput = GPIO_PIN_NONE);
+    COMPClass(COMP_TypeDef *comp_reg, int posinpin = GPIO_PIN_NONE, int neginput = GPIO_PIN_NONE, uint32_t mode = 0);
     ~COMPClass();
 
     bool begin(int posinpin = GPIO_PIN_NONE, int neginput = GPIO_PIN_NONE, uint32_t option = 0);
@@ -88,7 +88,7 @@ public:
     uint8_t this_comp = 0;   
     
 private:   
-    //struct stm32l4_comp_t *_comp = new stm32l4_comp_t;
+    //struct _stm32l4_comp_t *_comp = new stm32l4_comp_t;
     stm32l4_comp_t comp_struct;
     struct _stm32l4_comp_t *_comp = &comp_struct; 
 };

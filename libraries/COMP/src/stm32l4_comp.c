@@ -428,7 +428,7 @@ void stm32l4_comp_hysteresis_mode(stm32l4_comp_t *comp, comp_mode_t hystmode) {
 
 void stm32l4_comp_winmode(stm32l4_comp_t *comp, bool enable) {
   COMP_TypeDef *_COMP = comp->COMPx;
-  if (_COMP != COMP2) //winmode only valid for COMP2
+  if (_COMP != COMP2) //winmode only valid for COMP2 (except l0, where it's COMP1)
     return;
   if (enable)
     _COMP->CSR |= COMP_CSR_WINMODE;
@@ -490,7 +490,6 @@ void stm32l4_comp_enable_interrupt(stm32l4_comp_t *comp, uint32_t mode, voidFunc
   stm32l4_comp_trigger_edges(comp, mode);
   
   stm32l4_comp_notify(comp, callback, comp->context, NULL);
-  //comp->callback = callback;
 
   NVIC_SetPriority(comp->interrupt, comp->priority);
   NVIC_EnableIRQ(comp->interrupt);
@@ -518,7 +517,8 @@ bool stm32l4_comp_interrupt_enabled(stm32l4_comp_t *comp) {
 }
 
 void stm32l4_comp_interrupt(stm32l4_comp_t *comp) {
-  comp->callback();
+  if (comp->callback != NULL)
+    comp->callback();
 }
 
 void stm32l4_comp_trigger_edges(stm32l4_comp_t *comp, uint32_t mode) {
@@ -564,10 +564,9 @@ bool stm32l4_comp_create(stm32l4_comp_t *comp, unsigned int instance, stm32l4_co
   if (pins != NULL)
     comp->pins = *pins;
   comp->interrupt = COMP_IRQn;
-  //comp->callback = NULL;
   comp->callback = NULL;
   comp->priority = priority;
-  comp->mode = mode;
+  comp->option = mode;
   
   stm32l4_comp_driver.instances[comp->instance] = comp;
 
@@ -594,19 +593,20 @@ bool stm32l4_comp_enable(stm32l4_comp_t *comp, uint32_t option, stm32l4_comp_cal
   _COMP->CSR = (uint32_t)0x00000000; //erase COMP settings
   if (!stm32l4_comp_pins_config(comp)) return false;
   
-  // at this point we hijack comp->option, and use it to keep a working copy of COMPx->CSR
+  if(option == 0 && comp->option != 0)    //if no options specified, but options specified in object creation, copy them over here.
+    option = comp->option;
   
   stm32l4_comp_configure(comp, option);
-  
-  //stm32l4_comp_notify(comp, callback, context, events);
 
   comp->state = COMP_STATE_READY;
+  return true;
 }
 
 bool stm32l4_comp_disable(stm32l4_comp_t *comp) {
   COMP_TypeDef *_COMP = comp->COMPx;
   stm32l4_comp_disable_event(comp);   
   stm32l4_comp_disable_interrupt(comp);
+  comp->option = 0; //erase any configured options
   _COMP->CSR = (uint32_t)0x00000000; //erase COMP settings
 }
 
@@ -632,48 +632,36 @@ bool stm32l4_comp_configure(stm32l4_comp_t *comp, uint32_t option) {
       stm32l4_comp_enable_interrupt(comp, RISING, NULL);  //rising edge trigger default (no callback)
     else
       stm32l4_comp_disable_interrupt(comp);
-  
-    /*
-    
-    //enable (should be last)
-    if (option & COMP_ENABLE) {
-        stm32l4_comp_enable_device();
-      else
-        stm32l4_comp_enable_device();
-    }
-    
-    //polarity
-    if (option & COMP_INVERT) {
-        stm32l4_comp_polarity(true);
-      else
-        stm32l4_comp_polarity(false);
-    }
     
     //power
     if (option & HIGH_POWER_MODE)
-      stm32l4_comp_power_mode(HIGH_MODE);
+      stm32l4_comp_power_mode(comp, HIGH_MODE);
     if (option & MED_POWER_MODE)
-      stm32l4_comp_power_mode(MED_MODE);
+      stm32l4_comp_power_mode(comp, MED_MODE);
     if (option & LOW_POWER_MODE)
-      stm32l4_comp_power_mode(LOW_MODE);
+      stm32l4_comp_power_mode(comp, LOW_MODE);
   
     //hysteresis
     if (option & HIGH_HYST_MODE)
-      stm32l4_comp_hysteresis_mode(HIGH_MODE);
+      stm32l4_comp_hysteresis_mode(comp, HIGH_MODE);
     if (option & MED_HYST_MODE)
-      stm32l4_comp_hysteresis_mode(MED_MODE);
+      stm32l4_comp_hysteresis_mode(comp, MED_MODE);
     if (option & LOW_HYST_MODE)
-      stm32l4_comp_hysteresis_mode(LOW_MODE);
+      stm32l4_comp_hysteresis_mode(comp, LOW_MODE);
     if (option & NONE_HYST_MODE)
-      stm32l4_comp_hysteresis_mode(NONE_MODE);
+      stm32l4_comp_hysteresis_mode(comp, NONE_MODE);
   
-  */
+    //window comparator mode
+    if (option & COMP_WINMODE)
+      stm32l4_comp_winmode(comp, true);
+    else
+      stm32l4_comp_winmode(comp, false);
      
 }
 
 bool stm32l4_comp_notify(stm32l4_comp_t *comp, stm32l4_comp_callback_t callback, void *context, uint32_t events) {
-    //comp->callback = callback;
-    comp->callback = callback;
+    if(callback != NULL)
+      comp->callback = callback;
     comp->context = context;
 
     return true;
@@ -698,7 +686,4 @@ void COMP_IRQHandler(void) {
 #ifdef __cplusplus
 }
 #endif
-
-#include "stm32l4_comp.h"
-#include "stm32l4_system.h"
 
