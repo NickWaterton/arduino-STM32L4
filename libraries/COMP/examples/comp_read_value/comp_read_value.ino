@@ -30,6 +30,10 @@
 #include "Arduino.h"
 #include "COMP.h"
 
+//#define Serial Serial1
+//#define BITS32 (0x80000000U)  //1 followed by 31 0's
+//#define PRREGBIN(x) Serial.print(#x" 0x"); Serial.println((x|BITS32),BIN) //used for debugging only
+
 //COMPClass Comparator(COMP2, A3, COMP_VINTREF, COMP_INVERT);  //COMP2, +input A3, -input x, output inverted 
 //or
 COMPClass Comparator(COMP2);  //enter COMP1 or COMP2 depending on which you can connect pins to

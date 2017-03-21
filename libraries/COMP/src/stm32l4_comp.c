@@ -621,18 +621,6 @@ bool stm32l4_comp_configure(stm32l4_comp_t *comp, uint32_t option) {
     else
       stm32l4_comp_polarity(comp, false);
   
-    //event enable
-    if (option & COMP_EVENT_ENABLE)
-      stm32l4_comp_enable_event(comp, RISING);  //rising edge trigger default
-    else
-      stm32l4_comp_disable_event(comp);
-  
-    //interrupt enable
-    if (option & COMP_INTERRUPT_ENABLE)
-      stm32l4_comp_enable_interrupt(comp, RISING, NULL);  //rising edge trigger default (no callback)
-    else
-      stm32l4_comp_disable_interrupt(comp);
-    
     //power
     if (option & HIGH_POWER_MODE)
       stm32l4_comp_power_mode(comp, HIGH_MODE);
@@ -651,15 +639,26 @@ bool stm32l4_comp_configure(stm32l4_comp_t *comp, uint32_t option) {
     if (option & NONE_HYST_MODE)
       stm32l4_comp_hysteresis_mode(comp, NONE_MODE);
   
+    //event enable
+    if (option & COMP_EVENT_ENABLE)
+      stm32l4_comp_enable_event(comp, RISING);  //rising edge trigger default
+    else
+      stm32l4_comp_disable_event(comp);
+  
+    //interrupt enable
+    if (option & COMP_INTERRUPT_ENABLE)
+      stm32l4_comp_enable_interrupt(comp, RISING, NULL);  //rising edge trigger default (no callback)
+    else
+      stm32l4_comp_disable_interrupt(comp); 
+  
     //window comparator mode
     if (option & COMP_WINMODE)
       stm32l4_comp_winmode(comp, true);
     else
-      stm32l4_comp_winmode(comp, false);
-     
+      stm32l4_comp_winmode(comp, false); 
 }
 
-bool stm32l4_comp_notify(stm32l4_comp_t *comp, stm32l4_comp_callback_t callback, void *context, uint32_t events) {
+bool stm32l4_comp_notify(stm32l4_comp_t *comp, stm32l4_comp_callback_t callback, void *context, uint32_t events) {   
     if(callback != NULL)
       comp->callback = callback;
     comp->context = context;

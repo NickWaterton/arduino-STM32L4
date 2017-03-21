@@ -39,17 +39,17 @@
 #define COMP_STATE_BUSY                 2
 #define COMP_STATE_READY                3
 
-#define COMP_INVERT                     1
-#define COMP_WINMODE                    2
-#define HIGH_POWER_MODE                 3
-#define MED_POWER_MODE                  4
-#define LOW_POWER_MODE                  5
-#define HIGH_HYST_MODE                  6
-#define MED_HYST_MODE                   7
-#define LOW_HYST_MODE                   8
-#define NONE_HYST_MODE                  9
-#define COMP_EVENT_ENABLE               10
-#define COMP_INTERRUPT_ENABLE           11
+#define COMP_INVERT                     0x0001
+#define COMP_WINMODE                    0x0002
+#define HIGH_POWER_MODE                 0x0004
+#define MED_POWER_MODE                  0x0008
+#define LOW_POWER_MODE                  0x0010
+#define HIGH_HYST_MODE                  0x0020
+#define MED_HYST_MODE                   0x0040
+#define LOW_HYST_MODE                   0x0080
+#define NONE_HYST_MODE                  0x0100
+#define COMP_EVENT_ENABLE               0x0200
+#define COMP_INTERRUPT_ENABLE           0x0400
 
 #ifdef __cplusplus
  extern "C" {

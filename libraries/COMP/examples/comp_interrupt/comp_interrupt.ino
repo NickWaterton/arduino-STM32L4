@@ -30,7 +30,7 @@
 #include "Arduino.h"
 #include "COMP.h"
 
-//COMPClass Comparator(COMP2, A3, COMP_VINTREF, COMP_INVERT | COMP_INTERRUPT_ENABLE);  //COMP2, +input A3, -input x, output inverted
+//COMPClass Comparator(COMP2, A3, COMP_VINTREF, COMP_INVERT | COMP_INTERRUPT_ENABLE);  //COMP2, +input A3, -input x, output inverted, interrupts enabled
 //or
 COMPClass Comparator(COMP2);  //enter COMP1 or COMP2 depending on which you can connect pins to
 
@@ -43,7 +43,7 @@ void setup() {
   pinMode(PIN_LED3, OUTPUT);
   digitalWrite(PIN_LED3, HIGH); //blue LED off
 
-  if (!Comparator.begin(A3, COMP_VINTREF, COMP_INVERT | COMP_INTERRUPT_ENABLE))  //enable pin A3, VINTREF (1.2V), Inverted polarity
+  if (!Comparator.begin(A3, COMP_VINTREF, COMP_INVERT | COMP_INTERRUPT_ENABLE))  //enable pin A3, VINTREF (1.2V), Inverted polarity, interrupts enabled
     Serial.println("COMP not enabled");
   else
     Serial.println("COMP initialised");
